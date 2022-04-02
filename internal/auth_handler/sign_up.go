@@ -1,9 +1,10 @@
-package handlers
+package auth_handler
 
 import (
 	"net/http"
 
 	"vaultea/api/internal/database"
+	"vaultea/api/internal/handlers"
 	"vaultea/api/internal/models"
 	"vaultea/api/internal/utils"
 	"vaultea/api/internal/validators"
@@ -11,20 +12,25 @@ import (
 	"gorm.io/gorm"
 )
 
-func (ProcedureData) ValidateRequestMethod(procData *ProcedureData) bool {
-	return utils.IsPost(procData.Request)
+type SignUpProcedure struct { // TODO: Move out of here and make more generic for handler
 }
 
-func (ProcedureData) CheckPermissions(procData *ProcedureData) bool {
+// Remove generic interfaces
+
+func (SignUpProcedure) CheckPermissions(procData *handlers.ProcedureData) bool {
 	return true
 }
 
-func (ProcedureData) ValidateData(proc *ProcedureData) bool {
+func (SignUpProcedure) ValidateRequestMethod(procData *handlers.ProcedureData) bool {
+	return utils.IsPost(procData.Request)
+}
+
+func (SignUpProcedure) ValidateData(proc *handlers.ProcedureData) bool {
 	proc.BodyMap = utils.GetRequestBodyMap(proc.Request)
 	return validators.SignUpValidator(proc.BodyMap)
 }
 
-func (ProcedureData) Execute(proc *ProcedureData) {
+func (SignUpProcedure) Execute(proc *handlers.ProcedureData) {
 	db := database.GetDb()
 
 	db.Transaction(func(tx *gorm.DB) error {
@@ -47,8 +53,9 @@ func (ProcedureData) Execute(proc *ProcedureData) {
 }
 
 func SignUp(writer http.ResponseWriter, request *http.Request) {
-	procData := ProcedureData{writer, request, make(map[string]interface{})}
-	ExecuteHandler(procData, &procData)
+	proc := SignUpProcedure{}
+	procData := handlers.ProcedureData{writer, request, make(map[string]interface{})}
+	handlers.ExecuteHandler(proc, &procData)
 }
 
 func Login(writer http.ResponseWriter, request *http.Request) {

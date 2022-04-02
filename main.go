@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"time"
 
+	"vaultea/api/internal/auth_handler"
 	"vaultea/api/internal/database"
-	"vaultea/api/internal/handlers"
 
 	"github.com/gorilla/mux"
 )
@@ -28,5 +28,5 @@ func main() {
 }
 
 func initRoutes(router *mux.Router) {
-	router.HandleFunc("/api/signup", handlers.SignUp)
+	router.HandleFunc("/api/signup", auth_handler.SignUp)
 }
