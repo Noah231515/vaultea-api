@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"net/http"
-	"vaultea/api/utils"
+	"vaultea/api/internal/utils"
 )
 
 func ExecuteHandler(proc GenericHandlerProcedure, procData *ProcedureData) {

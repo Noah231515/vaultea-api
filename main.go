@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"time"
 
-	"vaultea/api/database"
-	"vaultea/api/handlers"
+	"vaultea/api/internal/database"
+	"vaultea/api/internal/handlers"
 
 	"github.com/gorilla/mux"
 )

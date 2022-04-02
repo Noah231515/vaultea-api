@@ -6,7 +6,7 @@ import (
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 
-	"vaultea/api/models"
+	"vaultea/api/internal/models"
 )
 
 var once sync.Once

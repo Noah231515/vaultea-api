@@ -1,6 +1,6 @@
 package validators
 
-import "vaultea/api/utils"
+import "vaultea/api/internal/utils"
 
 func SignUpValidator(bodyData map[string]interface{}) bool {
 	if utils.IsEmptyString(bodyData["key"].(string)) {

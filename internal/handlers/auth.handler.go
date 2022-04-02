@@ -3,10 +3,10 @@ package handlers
 import (
 	"net/http"
 
-	"vaultea/api/database"
-	"vaultea/api/models"
-	"vaultea/api/utils"
-	"vaultea/api/validators"
+	"vaultea/api/internal/database"
+	"vaultea/api/internal/models"
+	"vaultea/api/internal/utils"
+	"vaultea/api/internal/validators"
 
 	"gorm.io/gorm"
 )
