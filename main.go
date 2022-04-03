@@ -29,4 +29,5 @@ func main() {
 
 func initRoutes(router *mux.Router) {
 	router.HandleFunc("/api/signup", auth_handler.SignUp)
+	router.HandleFunc("/api/login", auth_handler.Login)
 }

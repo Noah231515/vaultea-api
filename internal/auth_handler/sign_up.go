@@ -12,10 +12,8 @@ import (
 	"gorm.io/gorm"
 )
 
-type SignUpProcedure struct { // TODO: Move out of here and make more generic for handler
+type SignUpProcedure struct {
 }
-
-// Remove generic interfaces
 
 func (SignUpProcedure) CheckPermissions(procData *handlers.ProcedureData) bool {
 	return true
@@ -56,9 +54,4 @@ func SignUp(writer http.ResponseWriter, request *http.Request) {
 	proc := SignUpProcedure{}
 	procData := handlers.ProcedureData{writer, request, make(map[string]interface{})}
 	handlers.ExecuteHandler(proc, &procData)
-}
-
-func Login(writer http.ResponseWriter, request *http.Request) {
-	// authenticate
-	// return user's data
 }
