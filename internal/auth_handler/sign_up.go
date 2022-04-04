@@ -46,7 +46,7 @@ func (SignUpProcedure) Execute(proc *handlers.ProcedureData) {
 
 		return nil
 	})
-	// create a private rsa key for the user to use for jwt
+	// do nothing for now
 	proc.Writer.WriteHeader(200)
 }
 
