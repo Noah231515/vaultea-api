@@ -1,6 +1,7 @@
 package auth_handler
 
 import (
+	"encoding/json"
 	"net/http"
 	"vaultea/api/internal/database"
 	"vaultea/api/internal/handlers"
@@ -36,8 +37,21 @@ func (LoginProcedure) Execute(proc *handlers.ProcedureData) {
 
 	if result.Error == nil {
 		if utils.ComparePassword(user.Password, proc.BodyMap["password"].(string)) {
-			// return data and jwt
+			resp := make(map[string]interface{})
 
+			resp["id"] = user.ID
+			resp["username"] = user.Username
+			resp["key"] = user.Key
+			resp["accessToken"] = "token"
+			resp["vaultId"] = "make sure to remove this"
+			resp["folders"] = make([]models.Folder, 0)
+			resp["passwords"] = make([]models.Password, 0)
+
+			jsonResponse, _ := json.Marshal(resp)
+
+			proc.Writer.WriteHeader(http.StatusOK)
+			proc.Writer.Write(jsonResponse)
+			return
 		} else {
 			utils.WriteBadResponse(proc.Writer, 500, invalidMessage)
 			return

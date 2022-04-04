@@ -24,7 +24,7 @@ func WriteBadResponse(writer http.ResponseWriter, code int, message string) {
 
 	jsonResponse, _ := json.Marshal(resp)
 
-	writer.WriteHeader(http.StatusInternalServerError)
+	writer.WriteHeader(code)
 	writer.Write(jsonResponse)
 }
 
