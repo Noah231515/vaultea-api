@@ -5,7 +5,9 @@ import (
 	b64 "encoding/base64"
 	"fmt"
 	"math/rand"
+	"vaultea/api/internal/models"
 
+	"github.com/golang-jwt/jwt/v4"
 	"golang.org/x/crypto/pbkdf2"
 )
 
@@ -46,4 +48,23 @@ func ComparePassword(dbPassword string, clientPassword string) bool {
 	} else {
 		return false
 	}
+}
+
+type Claims struct {
+	Username string `json:"username"`
+	jwt.RegisteredClaims
+} // Break this out into crypto util package
+
+func GetJWT(user models.User) string {
+	// experationDate := time.Now().Add(5 * time.Minute)
+	claims := &Claims{
+		Username:         user.Username,
+		RegisteredClaims: jwt.RegisteredClaims{
+			// In JWT, the expiry time is expressed as unix milliseconds
+		},
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodES512, claims)
+	// signedString, _ = token.SignedString()
+	return ""
 }
