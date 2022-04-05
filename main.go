@@ -7,11 +7,13 @@ import (
 
 	"vaultea/api/internal/auth_handler"
 	"vaultea/api/internal/database"
+	"vaultea/api/internal/environment"
 
 	"github.com/gorilla/mux"
 )
 
 func main() {
+	environment.SetEnv()
 	router := mux.NewRouter()
 	database.ConnectToDatabase()
 	database.MakeMigrations()

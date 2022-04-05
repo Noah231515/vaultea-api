@@ -57,14 +57,14 @@ type Claims struct {
 
 func GetJWT(user models.User) string {
 	// experationDate := time.Now().Add(5 * time.Minute)
-	claims := &Claims{
-		Username:         user.Username,
-		RegisteredClaims: jwt.RegisteredClaims{
-			// In JWT, the expiry time is expressed as unix milliseconds
-		},
-	}
+	// claims := &Claims{
+	// 	Username:         user.Username,
+	// 	RegisteredClaims: jwt.RegisteredClaims{
+	// 		// In JWT, the expiry time is expressed as unix milliseconds
+	// 	},
+	// }
 
-	token := jwt.NewWithClaims(jwt.SigningMethodES512, claims)
+	//	token := jwt.NewWithClaims(jwt.SigningMethodES512, claims)
 	// signedString, _ = token.SignedString()
 	return ""
 }
