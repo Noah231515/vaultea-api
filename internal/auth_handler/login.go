@@ -38,12 +38,13 @@ func (LoginProcedure) Execute(proc *handlers.ProcedureData) {
 	if result.Error == nil {
 		if utils.ComparePassword(user.Password, proc.BodyMap["password"].(string)) {
 			resp := make(map[string]interface{})
+			jwt, _ := utils.GetJWT(user)
 
 			resp["id"] = user.ID
 			resp["username"] = user.Username
 			resp["key"] = user.Key
-			resp["accessToken"] = "token"
-			resp["vaultId"] = "make sure to remove this"
+			resp["accessToken"] = jwt
+			resp["vaultId"] = 1
 			resp["folders"] = make([]models.Folder, 0)
 			resp["passwords"] = make([]models.Password, 0)
 

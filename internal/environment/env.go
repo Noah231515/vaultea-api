@@ -7,10 +7,10 @@ import (
 	"log"
 )
 
-var env map[string]interface{}
+var env map[string]string
 
 func SetEnv() {
-	env = make(map[string]interface{})
+	env = make(map[string]string)
 	envData, err := ioutil.ReadFile("env.json") // TODO: make absolute
 	if err != nil {
 		log.Fatal(err)
@@ -18,4 +18,8 @@ func SetEnv() {
 
 	json.Unmarshal(envData, &env)
 	fmt.Println(env["SECRET_KEY"])
+}
+
+func GetEnv() map[string]string {
+	return env
 }

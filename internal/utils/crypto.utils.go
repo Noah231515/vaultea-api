@@ -3,8 +3,9 @@ package utils
 import (
 	"crypto/sha512"
 	b64 "encoding/base64"
-	"fmt"
 	"math/rand"
+	"time"
+	"vaultea/api/internal/environment"
 	"vaultea/api/internal/models"
 
 	"github.com/golang-jwt/jwt/v4"
@@ -12,10 +13,9 @@ import (
 )
 
 func GetRandomSalt() []byte {
-	salt := make([]byte, 8)
+	salt := make([]byte, 8) // Look into seeding
 	rand.Read(salt)
 
-	fmt.Println(string(salt))
 	return salt
 }
 
@@ -39,9 +39,6 @@ func ComparePassword(dbPassword string, clientPassword string) bool {
 		hashedClientPassword := PbKdf2(clientPassword, salt)
 		hashedPassWithSalt := append(salt, hashedClientPassword...)
 
-		fmt.Println(dbPassword)
-		fmt.Println(b64.StdEncoding.EncodeToString([]byte(hashedPassWithSalt)))
-
 		return dbPassword == b64.StdEncoding.EncodeToString(hashedPassWithSalt)
 		// return bytes.Equal(decodedDbPassword, hashedPassWithSalt) TODO: come back to this. this always passes for some rason
 
@@ -55,16 +52,24 @@ type Claims struct {
 	jwt.RegisteredClaims
 } // Break this out into crypto util package
 
-func GetJWT(user models.User) string {
-	// experationDate := time.Now().Add(5 * time.Minute)
-	// claims := &Claims{
-	// 	Username:         user.Username,
-	// 	RegisteredClaims: jwt.RegisteredClaims{
-	// 		// In JWT, the expiry time is expressed as unix milliseconds
-	// 	},
-	// }
+func GetJWT(user models.User) (string, error) {
+	expirationDate := time.Now().Add(5 * time.Minute)
+	secret := environment.GetEnv()["SECRET_STRING"]
+	secretBytes := []byte(secret)
 
-	//	token := jwt.NewWithClaims(jwt.SigningMethodES512, claims)
-	// signedString, _ = token.SignedString()
-	return ""
+	claims := &Claims{
+		Username: user.Username,
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(expirationDate),
+		},
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS512, claims)
+	signedString, err := token.SignedString(secretBytes)
+
+	if err != nil { // TODO: handle error here
+		return "", err
+	} else {
+		return signedString, nil
+	}
 }
