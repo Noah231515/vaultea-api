@@ -5,13 +5,15 @@ import (
 	"net/http"
 	"time"
 
-	"vaultea/api/database"
-	"vaultea/api/handlers"
+	"vaultea/api/internal/auth_handler"
+	"vaultea/api/internal/database"
+	"vaultea/api/internal/environment"
 
 	"github.com/gorilla/mux"
 )
 
 func main() {
+	environment.SetEnv()
 	router := mux.NewRouter()
 	database.ConnectToDatabase()
 	database.MakeMigrations()
@@ -28,5 +30,6 @@ func main() {
 }
 
 func initRoutes(router *mux.Router) {
-	router.HandleFunc("/api/signup", handlers.SignUp)
+	router.HandleFunc("/api/signup", auth_handler.SignUp)
+	router.HandleFunc("/api/login", auth_handler.Login)
 }
