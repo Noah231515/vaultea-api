@@ -5,9 +5,9 @@ import (
 	"net/http"
 	"time"
 
-	"vaultea/api/internal/auth_handler"
 	"vaultea/api/internal/database"
 	"vaultea/api/internal/environment"
+	"vaultea/api/internal/handlers/auth"
 
 	"github.com/gorilla/mux"
 )
@@ -20,9 +20,8 @@ func main() {
 	initRoutes(router)
 
 	srv := &http.Server{
-		Handler: router,
-		Addr:    "127.0.0.1:8081",
-		// Good practice: enforce timeouts for servers you create!
+		Handler:      router,
+		Addr:         "127.0.0.1:8081", // TODO: make configurable
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,
 	}
@@ -30,6 +29,6 @@ func main() {
 }
 
 func initRoutes(router *mux.Router) {
-	router.HandleFunc("/api/signup", auth_handler.SignUp)
-	router.HandleFunc("/api/login", auth_handler.Login)
+	router.HandleFunc("/api/signup", auth.SignUp)
+	router.HandleFunc("/api/login", auth.Login)
 }
