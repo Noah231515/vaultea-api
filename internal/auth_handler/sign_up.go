@@ -6,7 +6,8 @@ import (
 	"vaultea/api/internal/database"
 	"vaultea/api/internal/handlers"
 	"vaultea/api/internal/models"
-	"vaultea/api/internal/utils"
+	crypto_utils "vaultea/api/internal/utils/crypto"
+	http_utils "vaultea/api/internal/utils/http"
 	"vaultea/api/internal/validators"
 
 	"gorm.io/gorm"
@@ -20,11 +21,11 @@ func (SignUpProcedure) CheckPermissions(procData *handlers.ProcedureData) bool {
 }
 
 func (SignUpProcedure) ValidateRequestMethod(procData *handlers.ProcedureData) bool {
-	return utils.IsPost(procData.Request)
+	return http_utils.IsPost(procData.Request)
 }
 
 func (SignUpProcedure) ValidateData(proc *handlers.ProcedureData) bool {
-	proc.BodyMap = utils.GetRequestBodyMap(proc.Request)
+	proc.BodyMap = http_utils.GetRequestBodyMap(proc.Request)
 	return validators.SignUpValidator(proc.BodyMap)
 }
 
@@ -32,7 +33,7 @@ func (SignUpProcedure) Execute(proc *handlers.ProcedureData) {
 	db := database.GetDb()
 
 	db.Transaction(func(tx *gorm.DB) error {
-		hashedPassword := utils.HashPassword(proc.BodyMap["password"].(string))
+		hashedPassword := crypto_utils.HashPassword(proc.BodyMap["password"].(string))
 
 		user := models.User{
 			Key:      proc.BodyMap["key"].(string),

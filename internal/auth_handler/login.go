@@ -6,7 +6,8 @@ import (
 	"vaultea/api/internal/database"
 	"vaultea/api/internal/handlers"
 	"vaultea/api/internal/models"
-	"vaultea/api/internal/utils"
+	crypto_utils "vaultea/api/internal/utils/crypto"
+	http_utils "vaultea/api/internal/utils/http"
 	"vaultea/api/internal/validators"
 
 	"gorm.io/gorm"
@@ -20,11 +21,11 @@ func (LoginProcedure) CheckPermissions(procData *handlers.ProcedureData) bool {
 }
 
 func (LoginProcedure) ValidateRequestMethod(procData *handlers.ProcedureData) bool {
-	return utils.IsPost(procData.Request)
+	return http_utils.IsPost(procData.Request)
 }
 
 func (LoginProcedure) ValidateData(proc *handlers.ProcedureData) bool {
-	proc.BodyMap = utils.GetRequestBodyMap(proc.Request)
+	proc.BodyMap = http_utils.GetRequestBodyMap(proc.Request)
 	return validators.LoginValidator(proc.BodyMap)
 }
 
@@ -36,9 +37,9 @@ func (LoginProcedure) Execute(proc *handlers.ProcedureData) {
 	result := db.Where("username = ?", proc.BodyMap["username"]).First(&user)
 
 	if result.Error == nil {
-		if utils.ComparePassword(user.Password, proc.BodyMap["password"].(string)) {
+		if crypto_utils.ComparePassword(user.Password, proc.BodyMap["password"].(string)) {
 			resp := make(map[string]interface{})
-			jwt, _ := utils.GetJWT(user)
+			jwt, _ := crypto_utils.GetJWT(user)
 
 			resp["id"] = user.ID
 			resp["username"] = user.Username
@@ -54,11 +55,11 @@ func (LoginProcedure) Execute(proc *handlers.ProcedureData) {
 			proc.Writer.Write(jsonResponse)
 			return
 		} else {
-			utils.WriteBadResponse(proc.Writer, 500, invalidMessage)
+			http_utils.WriteBadResponse(proc.Writer, 500, invalidMessage)
 			return
 		}
 	} else if result.Error == gorm.ErrRecordNotFound {
-		utils.WriteBadResponse(proc.Writer, 500, invalidMessage)
+		http_utils.WriteBadResponse(proc.Writer, 500, invalidMessage)
 		return
 	}
 
