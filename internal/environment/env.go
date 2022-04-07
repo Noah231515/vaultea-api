@@ -2,7 +2,6 @@ package environment
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"log"
 )
@@ -17,7 +16,6 @@ func SetEnv() {
 	}
 
 	json.Unmarshal(envData, &env)
-	fmt.Println(env["SECRET_KEY"])
 }
 
 func GetEnv() map[string]string {

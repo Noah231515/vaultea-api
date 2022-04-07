@@ -13,9 +13,5 @@ func FolderValidator(bodyData map[string]interface{}) bool {
 		return false
 	}
 
-	if string_utils.IsEmptyString(bodyData["folderId"].(string)) {
-		return false
-	}
-
 	return true
 }

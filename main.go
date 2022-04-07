@@ -8,6 +8,7 @@ import (
 	"vaultea/api/internal/database"
 	"vaultea/api/internal/environment"
 	"vaultea/api/internal/handlers/auth"
+	"vaultea/api/internal/handlers/folder"
 
 	"github.com/gorilla/mux"
 )
@@ -29,6 +30,10 @@ func main() {
 }
 
 func initRoutes(router *mux.Router) {
-	router.HandleFunc("/api/signup", auth.SignUp)
-	router.HandleFunc("/api/login", auth.Login)
+	router.Methods()
+	router.HandleFunc("/api/signup", auth.SignUp).Methods("POST")
+	router.HandleFunc("/api/login", auth.Login).Methods("POST")
+
+	// Folder
+	router.HandleFunc("/api/folder", folder.Create).Methods("POST")
 }
