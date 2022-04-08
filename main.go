@@ -30,10 +30,11 @@ func main() {
 }
 
 func initRoutes(router *mux.Router) {
-	router.Methods()
+	// Auth
 	router.HandleFunc("/api/signup", auth.SignUp).Methods("POST")
 	router.HandleFunc("/api/login", auth.Login).Methods("POST")
 
 	// Folder
-	router.HandleFunc("/api/folder", folder.Create).Methods("POST")
+	folderRouter := router.Path("/api/folder").Subrouter()
+	folderRouter.HandleFunc("", folder.Create).Methods(http.MethodPost)
 }
