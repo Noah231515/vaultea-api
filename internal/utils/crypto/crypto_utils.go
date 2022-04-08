@@ -5,6 +5,7 @@ import (
 	b64 "encoding/base64"
 	"math/rand"
 	"time"
+	"vaultea/api/internal/database"
 	"vaultea/api/internal/environment"
 	"vaultea/api/internal/models"
 
@@ -48,12 +49,21 @@ func ComparePassword(dbPassword string, clientPassword string) bool {
 }
 
 func GetJWT(user models.User) (string, error) {
+	var vault models.Vault
+	db := database.GetDb()
+	db.Where("user_id = ?", user.ID).Find(&vault)
+
+	if (vault == models.Vault{}) {
+		// panic("NO vault found for user")
+	}
+
 	expirationDate := time.Now().Add(5 * time.Minute)
 	secret := environment.GetEnv()["SECRET_STRING"]
 	secretBytes := []byte(secret)
 
 	claims := &Claims{
 		Username: user.Username,
+		VaultID:  vault.ID,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(expirationDate),
 		},
