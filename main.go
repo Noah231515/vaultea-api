@@ -9,6 +9,7 @@ import (
 	"vaultea/api/internal/environment"
 	"vaultea/api/internal/handlers/auth"
 	"vaultea/api/internal/handlers/folder"
+	"vaultea/api/internal/middleware/authentication"
 
 	"github.com/gorilla/mux"
 )
@@ -36,5 +37,7 @@ func initRoutes(router *mux.Router) {
 
 	// Folder
 	folderRouter := router.Path("/api/folder").Subrouter()
+	folderRouter.Use(authentication.LoggingMiddleware)
 	folderRouter.HandleFunc("", folder.Create).Methods(http.MethodPost)
+	// TODO: Add middleware func to parse jwt
 }

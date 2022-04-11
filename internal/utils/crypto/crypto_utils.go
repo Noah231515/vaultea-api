@@ -54,7 +54,7 @@ func GetJWT(user models.User) (string, error) {
 	db.Where("user_id = ?", user.ID).Find(&vault)
 
 	if (vault == models.Vault{}) {
-		// panic("NO vault found for user")
+		panic("No vault found for user")
 	}
 
 	expirationDate := time.Now().Add(5 * time.Minute)
