@@ -83,6 +83,10 @@ func GetJWT(user models.User) (string, error) {
 	}
 }
 
+func customClaims() validator.CustomClaims {
+	return &Claims{}
+}
+
 func InitJwtValidator() (*validator.Validator, error) {
 	keyFunc := func(ctx context.Context) (interface{}, error) {
 		// Our token must be signed using this data.
@@ -94,7 +98,9 @@ func InitJwtValidator() (*validator.Validator, error) {
 		keyFunc,
 		validator.HS512,
 		"https://vaultea.io",
-		[]string{"https://vaultea.io"}, // TODO: Make Configurable
+		[]string{"https://vaultea.io"}, // TODO: Make Configurable,
+		validator.WithCustomClaims(customClaims),
+		validator.WithAllowedClockSkew(30*time.Second),
 	)
 
 	return jwtValidator, err

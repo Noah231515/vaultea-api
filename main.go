@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -40,7 +39,6 @@ func main() {
 }
 
 func initRoutes(router *mux.Router, validator *validator.Validator) {
-	fmt.Println(validator.ValidateToken)
 	middleware := jwtmiddleware.New(validator.ValidateToken)
 
 	// Auth
