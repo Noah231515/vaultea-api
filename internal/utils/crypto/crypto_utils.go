@@ -1,14 +1,19 @@
 package crypto_utils
 
 import (
+	"context"
 	"crypto/sha512"
 	b64 "encoding/base64"
+	"encoding/json"
 	"math/rand"
+	"net/http"
 	"time"
 	"vaultea/api/internal/database"
 	"vaultea/api/internal/environment"
 	"vaultea/api/internal/models"
 
+	jwtmiddleware "github.com/auth0/go-jwt-middleware/v2"
+	"github.com/auth0/go-jwt-middleware/v2/validator"
 	"github.com/golang-jwt/jwt/v4"
 	"golang.org/x/crypto/pbkdf2"
 )
@@ -66,6 +71,8 @@ func GetJWT(user models.User) (string, error) {
 		VaultID:  vault.ID,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(expirationDate),
+			Issuer:    "https://vaultea.io", // TODO: Make configurable
+			Audience:  []string{"https://vaultea.io"},
 		},
 	}
 
@@ -78,3 +85,33 @@ func GetJWT(user models.User) (string, error) {
 		return signedString, nil
 	}
 }
+
+func InitJwtValidator() (*validator.Validator, error) {
+	keyFunc := func(ctx context.Context) (interface{}, error) {
+		// Our token must be signed using this data.
+		return []byte(environment.GetEnv()["SECRET_KEY"]), nil
+	}
+
+	// Set up the validator.
+	jwtValidator, err := validator.New(
+		keyFunc,
+		validator.HS512,
+		"https://vaultea.io",
+		[]string{"https://vaultea.io"}, // TODO: Make Configurable
+	)
+
+	return jwtValidator, err
+}
+
+var Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	claims := r.Context().Value(jwtmiddleware.ContextKey{}).(*validator.ValidatedClaims)
+
+	payload, err := json.Marshal(claims)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(payload)
+})

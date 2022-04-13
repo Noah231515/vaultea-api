@@ -9,8 +9,10 @@ import (
 	"vaultea/api/internal/environment"
 	"vaultea/api/internal/handlers/auth"
 	"vaultea/api/internal/handlers/folder"
-	"vaultea/api/internal/middleware/authentication"
+	crypto_utils "vaultea/api/internal/utils/crypto"
 
+	jwtmiddleware "github.com/auth0/go-jwt-middleware/v2"
+	"github.com/auth0/go-jwt-middleware/v2/validator"
 	"github.com/gorilla/mux"
 )
 
@@ -19,25 +21,34 @@ func main() {
 	router := mux.NewRouter()
 	database.ConnectToDatabase()
 	database.MakeMigrations()
-	initRoutes(router)
+	validator, err := crypto_utils.InitJwtValidator()
 
-	srv := &http.Server{
-		Handler:      router,
-		Addr:         "127.0.0.1:8081", // TODO: make configurable
-		WriteTimeout: 15 * time.Second,
-		ReadTimeout:  15 * time.Second,
+	if err == nil {
+		initRoutes(router, validator)
+		srv := &http.Server{
+			Handler:      router,
+			Addr:         "127.0.0.1:8081", // TODO: make configurable
+			WriteTimeout: 15 * time.Second,
+			ReadTimeout:  15 * time.Second,
+		}
+		log.Fatal(srv.ListenAndServe())
+	} else {
+		log.Fatal(err)
 	}
-	log.Fatal(srv.ListenAndServe())
+
 }
 
-func initRoutes(router *mux.Router) {
+func initRoutes(router *mux.Router, validator *validator.Validator) {
+	middleware := jwtmiddleware.New(validator.ValidateToken)
+	// validationMethod := jwtValidator.CheckJWT(crypto_utils.Handler)
+
 	// Auth
 	router.HandleFunc("/api/signup", auth.SignUp).Methods("POST")
 	router.HandleFunc("/api/login", auth.Login).Methods("POST")
 
 	// Folder
 	folderRouter := router.Path("/api/folder").Subrouter()
-	folderRouter.Use(authentication.LoggingMiddleware)
+	folderRouter.Use(middleware.CheckJWT)
 	folderRouter.HandleFunc("", folder.Create).Methods(http.MethodPost)
 	// TODO: Add middleware func to parse jwt
 }
