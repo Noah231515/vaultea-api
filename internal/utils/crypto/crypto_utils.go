@@ -4,15 +4,12 @@ import (
 	"context"
 	"crypto/sha512"
 	b64 "encoding/base64"
-	"encoding/json"
 	"math/rand"
-	"net/http"
 	"time"
 	"vaultea/api/internal/database"
 	"vaultea/api/internal/environment"
 	"vaultea/api/internal/models"
 
-	jwtmiddleware "github.com/auth0/go-jwt-middleware/v2"
 	"github.com/auth0/go-jwt-middleware/v2/validator"
 	"github.com/golang-jwt/jwt/v4"
 	"golang.org/x/crypto/pbkdf2"
@@ -102,16 +99,3 @@ func InitJwtValidator() (*validator.Validator, error) {
 
 	return jwtValidator, err
 }
-
-var Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-	claims := r.Context().Value(jwtmiddleware.ContextKey{}).(*validator.ValidatedClaims)
-
-	payload, err := json.Marshal(claims)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(payload)
-})

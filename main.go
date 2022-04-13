@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -39,8 +40,8 @@ func main() {
 }
 
 func initRoutes(router *mux.Router, validator *validator.Validator) {
+	fmt.Println(validator.ValidateToken)
 	middleware := jwtmiddleware.New(validator.ValidateToken)
-	// validationMethod := jwtValidator.CheckJWT(crypto_utils.Handler)
 
 	// Auth
 	router.HandleFunc("/api/signup", auth.SignUp).Methods("POST")
@@ -49,6 +50,7 @@ func initRoutes(router *mux.Router, validator *validator.Validator) {
 	// Folder
 	folderRouter := router.Path("/api/folder").Subrouter()
 	folderRouter.Use(middleware.CheckJWT)
+
 	folderRouter.HandleFunc("", folder.Create).Methods(http.MethodPost)
 	// TODO: Add middleware func to parse jwt
 }
