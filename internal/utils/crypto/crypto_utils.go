@@ -60,7 +60,7 @@ func GetJWT(user models.User) (string, error) {
 	}
 
 	expirationDate := time.Now().Add(5 * time.Minute)
-	secret := environment.GetEnv()["SECRET_STRING"]
+	secret := environment.GetEnv()["SECRET_KEY"] // TODO: Add getter
 	secretBytes := []byte(secret)
 
 	claims := &Claims{
