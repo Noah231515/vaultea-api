@@ -2,12 +2,10 @@ package models
 
 import (
 	"time"
-
-	"gorm.io/gorm"
 )
 
 type Password struct {
-	gorm.Model
+	BaseModel
 	VaultID     uint
 	Vault       Vault `gorm:"not null"`
 	FolderID    uint

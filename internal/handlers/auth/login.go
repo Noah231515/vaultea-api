@@ -34,9 +34,16 @@ func (LoginProcedure) Execute(proc *handlers.ProcedureData) {
 	invalidMessage := "Invalid username or password"
 
 	user := models.User{}
-	result := db.Where("username = ?", proc.BodyMap["username"]).First(&user)
+	vault := models.Vault{}
+	folders := []models.Folder{}
+	passwords := []models.Password{}
 
-	if result.Error == nil {
+	result := db.Where("username = ?", proc.BodyMap["username"]).First(&user)
+	vaultResult := db.Where("user_id = ?", user.ID).First(&vault)
+	foldersResult := db.Where("vault_id = ?", vault.ID).Find(&folders)
+	passwordsResult := db.Where("vault_id = ?", vault.ID).Find(&passwords)
+
+	if result.Error == nil && vaultResult.Error == nil && foldersResult.Error == nil && passwordsResult.Error == nil {
 		if crypto_utils.ComparePassword(user.Password, proc.BodyMap["password"].(string)) {
 			resp := make(map[string]interface{})
 			jwt, _ := crypto_utils.GetJWT(user)
@@ -45,9 +52,9 @@ func (LoginProcedure) Execute(proc *handlers.ProcedureData) {
 			resp["username"] = user.Username
 			resp["key"] = user.Key
 			resp["accessToken"] = jwt
-			resp["vaultId"] = 1
-			resp["folders"] = make([]models.Folder, 0)
-			resp["passwords"] = make([]models.Password, 0)
+			resp["vaultId"] = vault.ID
+			resp["folders"] = folders
+			resp["passwords"] = passwords
 
 			jsonResponse, _ := json.Marshal(resp)
 
