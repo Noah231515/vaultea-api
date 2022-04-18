@@ -6,12 +6,12 @@ import (
 
 type Password struct {
 	BaseModel
-	VaultID     uint
-	Vault       Vault `gorm:"not null"`
-	FolderID    uint
+	VaultID     uint  `gorm:"not null" json:"-"`
+	Vault       Vault `json:"-"`
+	FolderID    uint  `json:"folderId`
 	Folder      Folder
-	Username    string `gorm:"not null"`
-	Password    string `gorm:"not null"`
-	Description string
-	ExpireDate  time.Time
+	Username    string    `gorm:"not null" json:"username"`
+	Password    string    `gorm:"not null" json:"password"`
+	Description string    `json:"description"`
+	ExpireDate  time.Time `json:"expireDate"`
 }
