@@ -52,7 +52,6 @@ func (LoginProcedure) Execute(proc *handlers.ProcedureData) {
 			resp["username"] = user.Username
 			resp["key"] = user.Key
 			resp["accessToken"] = jwt
-			resp["vaultId"] = vault.ID
 			resp["folders"] = folders
 			resp["passwords"] = passwords
 
