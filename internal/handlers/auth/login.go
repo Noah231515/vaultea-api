@@ -16,14 +16,6 @@ import (
 type LoginProcedure struct {
 }
 
-func (LoginProcedure) CheckPermissions(procData *handlers.ProcedureData) bool {
-	return true
-}
-
-func (LoginProcedure) ValidateRequestMethod(procData *handlers.ProcedureData) bool {
-	return http_utils.IsPost(procData.Request)
-}
-
 func (LoginProcedure) ValidateData(proc *handlers.ProcedureData) bool {
 	proc.BodyMap = http_utils.GetRequestBodyMap(proc.Request)
 	return validators.LoginValidator(proc.BodyMap)

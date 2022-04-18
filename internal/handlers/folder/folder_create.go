@@ -14,14 +14,6 @@ import (
 type CreateProcedure struct {
 }
 
-func (CreateProcedure) CheckPermissions(procData *handlers.ProcedureData) bool {
-	return true
-}
-
-func (CreateProcedure) ValidateRequestMethod(procData *handlers.ProcedureData) bool {
-	return http_utils.IsPost(procData.Request)
-}
-
 func (CreateProcedure) ValidateData(proc *handlers.ProcedureData) bool {
 	proc.BodyMap = http_utils.GetRequestBodyMap(proc.Request)
 	return validators.FolderValidator(proc.BodyMap)
