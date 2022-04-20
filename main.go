@@ -46,9 +46,9 @@ func initRoutes(router *mux.Router, validator *validator.Validator) {
 	router.HandleFunc("/api/login", auth.Login).Methods("POST")
 
 	// Folder
-	folderRouter := router.Path("/api/folder").Subrouter()
+	folderRouter := router.PathPrefix("/api/folder").Subrouter()
 	folderRouter.Use(middleware.CheckJWT)
 
 	folderRouter.HandleFunc("", folder.Create).Methods(http.MethodPost)
-	// TODO: Add middleware func to parse jwt
+	folderRouter.HandleFunc("/{folderId:[0-9]+}", folder.Update).Methods(http.MethodPut)
 }
