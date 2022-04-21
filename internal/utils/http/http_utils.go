@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
+	"reflect"
 	"vaultea/api/internal/database"
 	"vaultea/api/internal/models"
 	crypto_utils "vaultea/api/internal/utils/crypto"
@@ -24,6 +25,25 @@ func GetRequestBodyMap(request *http.Request) map[string]interface{} {
 
 	return bodyMap
 }
+
+func GetBodyData(request *http.Request, dataType reflect.Type) (interface{}, error) {
+	var jsonErr error
+	b, err := ioutil.ReadAll(request.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	switch dataType.Name() {
+	case "Folder":
+		data := models.Folder{}
+		jsonErr = json.Unmarshal(b, &data)
+
+		return data, jsonErr
+	default:
+		panic("Unknown data type")
+	}
+}
+
 func WriteBadResponse(writer http.ResponseWriter, code int, message string) {
 	resp := make(map[string]string)
 	resp["message"] = message

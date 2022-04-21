@@ -9,6 +9,7 @@ import (
 	"vaultea/api/internal/environment"
 	"vaultea/api/internal/handlers/auth"
 	"vaultea/api/internal/handlers/folder"
+	"vaultea/api/internal/middleware"
 	crypto_utils "vaultea/api/internal/utils/crypto"
 
 	jwtmiddleware "github.com/auth0/go-jwt-middleware/v2"
@@ -39,7 +40,7 @@ func main() {
 }
 
 func initRoutes(router *mux.Router, validator *validator.Validator) {
-	middleware := jwtmiddleware.New(validator.ValidateToken)
+	jwtMiddleware := jwtmiddleware.New(validator.ValidateToken)
 
 	// Auth
 	router.HandleFunc("/api/signup", auth.SignUp).Methods("POST")
@@ -47,7 +48,7 @@ func initRoutes(router *mux.Router, validator *validator.Validator) {
 
 	// Folder
 	folderRouter := router.PathPrefix("/api/folder").Subrouter()
-	folderRouter.Use(middleware.CheckJWT)
+	folderRouter.Use(jwtMiddleware.CheckJWT, middleware.FolderDataMiddleware)
 
 	folderRouter.HandleFunc("", folder.Create).Methods(http.MethodPost)
 	folderRouter.HandleFunc("/{folderId:[0-9]+}", folder.Update).Methods(http.MethodPut)
