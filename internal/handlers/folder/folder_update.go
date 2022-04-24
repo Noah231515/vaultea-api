@@ -22,11 +22,12 @@ func (UpdateProcedure) ValidateData(proc *handlers.ProcedureData) bool {
 func (UpdateProcedure) Execute(proc *handlers.ProcedureData) {
 	db := database.GetDb()
 	folder := GetFolder(proc.Request)
-	folderId, err := strconv.ParseUint(mux.Vars(proc.Request)["folderId"], 10, 1)
+	folderId, err := strconv.ParseUint(mux.Vars(proc.Request)["folderId"], 10, 64)
 
 	if err != nil {
 		proc.Writer.WriteHeader(500)
 		proc.Writer.Write([]byte(err.Error()))
+		return
 	}
 
 	folder.ID = uint(folderId)
