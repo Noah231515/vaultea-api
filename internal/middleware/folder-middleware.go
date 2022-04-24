@@ -10,6 +10,11 @@ import (
 
 func FolderDataMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodDelete {
+			next.ServeHTTP(w, r)
+			return
+		}
+
 		rawData, err := http_utils.GetBodyData(r, reflect.TypeOf(models.Folder{}))
 
 		if (err) != nil {

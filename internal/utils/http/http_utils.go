@@ -53,6 +53,11 @@ func WriteBadResponse(writer http.ResponseWriter, code int, message string) {
 	writer.Write(jsonResponse)
 }
 
+func WriteErrorResponse(writer http.ResponseWriter, err error) {
+	writer.WriteHeader(500)
+	writer.Write([]byte(err.Error()))
+}
+
 func IsPost(request *http.Request) bool {
 	return request.Method == http.MethodPost
 }

@@ -1,12 +1,15 @@
 package folder
 
 import (
+	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 
 	"vaultea/api/internal/database"
 	"vaultea/api/internal/handlers"
 	"vaultea/api/internal/models"
+	http_utils "vaultea/api/internal/utils/http"
 
 	"github.com/gorilla/mux"
 )
@@ -20,17 +23,26 @@ func (DeleteProcedure) ValidateData(proc *handlers.ProcedureData) bool {
 
 func (DeleteProcedure) Execute(proc *handlers.ProcedureData) {
 	db := database.GetDb()
-	folderId, err := strconv.ParseUint(mux.Vars(proc.Request)["folderId"], 10, 1)
+	folderId, err := strconv.ParseUint(mux.Vars(proc.Request)["folderId"], 10, 64)
+	responseMap := make(map[string]string)
 
 	if err != nil {
-		proc.Writer.WriteHeader(500)
-		proc.Writer.Write([]byte(err.Error()))
+		http_utils.WriteErrorResponse(proc.Writer, err)
+		return
 	}
 
-	db.Model(models.Folder{}).Delete(folderId)
+	db.Delete(&models.Folder{}, folderId)
+
+	responseMap["id"] = fmt.Sprint(folderId)
+	response, err := json.Marshal(responseMap)
+
+	if err != nil {
+		http_utils.WriteErrorResponse(proc.Writer, err)
+		return
+	}
 
 	proc.Writer.WriteHeader(200)
-	proc.Writer.Write([]byte("wow"))
+	proc.Writer.Write(response)
 }
 
 func Delete(writer http.ResponseWriter, request *http.Request) {
