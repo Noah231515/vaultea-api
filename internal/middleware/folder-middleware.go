@@ -16,7 +16,6 @@ func FolderDataMiddleware(next http.Handler) http.Handler {
 			panic(err)
 		}
 
-		// fmt.Println(rawData)
 		ctx := context.WithValue(r.Context(), "folder", rawData)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
