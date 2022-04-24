@@ -1,10 +1,15 @@
 package folder
 
 import (
+	"encoding/json"
 	"net/http"
+	"strconv"
 
+	"vaultea/api/internal/database"
 	"vaultea/api/internal/handlers"
 	"vaultea/api/internal/validators"
+
+	"github.com/gorilla/mux"
 )
 
 type UpdateProcedure struct {
@@ -12,38 +17,30 @@ type UpdateProcedure struct {
 
 func (UpdateProcedure) ValidateData(proc *handlers.ProcedureData) bool {
 	return validators.FolderValidator(GetFolder(proc.Request))
-	return true
 }
 
 func (UpdateProcedure) Execute(proc *handlers.ProcedureData) {
-	// db := database.GetDb()
-	// folder := models.Folder{}
+	db := database.GetDb()
+	folder := GetFolder(proc.Request)
+	folderId, err := strconv.ParseUint(mux.Vars(proc.Request)["folderId"], 10, 1)
 
-	// b, err := ioutil.ReadAll(proc.Request.Body) // We want to put body in context
+	if err != nil {
+		proc.Writer.WriteHeader(500)
+		proc.Writer.Write([]byte(err.Error()))
+	}
 
-	// if err != nil {
-	// 	proc.Writer.WriteHeader(500)
-	// 	proc.Writer.Write([]byte(err.Error()))
-	// 	return
-	// }
-	// json.Unmarshal(b, &folder)
+	folder.ID = uint(folderId)
 
-	// updatedFolder := db.Model(&folder).Where("folder_id = ?", folder.ID).Updates(models.Folder{FolderID: folder.FolderID, Name: folder.Name, Description: folder.Description}) // TODO: Verify that the user can edit this
-	// if updatedFolder.Error != nil {
-	// 	proc.Writer.WriteHeader(500)
-	// 	proc.Writer.Write([]byte(updatedFolder.Error.Error()))
-	// 	return
-	// }
+	db.Model(folder).Updates(&folder)
+	response, err := json.Marshal(&folder)
+	if err != nil {
+		proc.Writer.WriteHeader(500)
+		proc.Writer.Write([]byte(err.Error()))
+		return
+	}
 
-	// response, err := json.Marshal(&folder)
-	// if err != nil {
-	// 	proc.Writer.WriteHeader(500)
-	// 	proc.Writer.Write([]byte(err.Error()))
-	// 	return
-	// }
-
-	// proc.Writer.WriteHeader(200)
-	// proc.Writer.Write(response)
+	proc.Writer.WriteHeader(200)
+	proc.Writer.Write(response)
 }
 
 func Update(writer http.ResponseWriter, request *http.Request) {
