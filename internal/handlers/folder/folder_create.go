@@ -6,7 +6,6 @@ import (
 
 	"vaultea/api/internal/database"
 	"vaultea/api/internal/handlers"
-	"vaultea/api/internal/models"
 	http_utils "vaultea/api/internal/utils/http"
 	"vaultea/api/internal/validators"
 )
@@ -15,28 +14,18 @@ type CreateProcedure struct {
 }
 
 func (CreateProcedure) ValidateData(proc *handlers.ProcedureData) bool {
-	proc.BodyMap = http_utils.GetRequestBodyMap(proc.Request)
-	return validators.FolderValidator(proc.BodyMap)
+	return validators.FolderValidator(GetFolder(proc.Request))
 }
 
 func (CreateProcedure) Execute(proc *handlers.ProcedureData) {
 	db := database.GetDb()
+	contextfolder := GetFolder(proc.Request)
 	vaultID := http_utils.GetVaultId(proc.Writer, proc.Request)
 
-	folder := models.Folder{
-		Name:        proc.BodyMap["name"].(string),
-		Description: proc.BodyMap["description"].(string),
-		VaultID:     vaultID,
-	}
+	contextfolder.VaultID = vaultID
+	db.Create(&contextfolder)
 
-	if proc.BodyMap["folderId"] != nil {
-		folderId := proc.BodyMap["folderId"].(uint)
-		folder.FolderID = &folderId
-	}
-
-	db.Create(&folder)
-
-	json, _ := json.Marshal(folder)
+	json, _ := json.Marshal(contextfolder)
 
 	proc.Writer.WriteHeader(200)
 	proc.Writer.Write(json)

@@ -1,11 +1,12 @@
 package validators
 
 import (
+	"vaultea/api/internal/models"
 	string_utils "vaultea/api/internal/utils/string"
 )
 
-func FolderValidator(bodyData map[string]interface{}) bool {
-	if string_utils.IsEmptyString(bodyData["name"].(string)) {
+func FolderValidator(folder models.Folder) bool {
+	if string_utils.IsEmptyString(folder.Name) {
 		return false
 	}
 

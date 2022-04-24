@@ -27,7 +27,6 @@ func GetRequestBodyMap(request *http.Request) map[string]interface{} {
 }
 
 func GetBodyData(request *http.Request, dataType reflect.Type) (interface{}, error) {
-	var data interface{}
 	var jsonErr error
 	b, err := ioutil.ReadAll(request.Body)
 	if err != nil {
@@ -36,8 +35,9 @@ func GetBodyData(request *http.Request, dataType reflect.Type) (interface{}, err
 
 	switch dataType.Name() {
 	case "Folder":
-		jsonErr = json.Unmarshal(b, &data)
-		return data, jsonErr
+		var folder models.Folder
+		jsonErr = json.Unmarshal(b, &folder)
+		return folder, jsonErr
 	default:
 		panic("Unknown data type")
 	}
