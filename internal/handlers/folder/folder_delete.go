@@ -38,21 +38,36 @@ func (DeleteProcedure) Execute(proc *handlers.ProcedureData) {
 		return
 	}
 
-	db.Model(models.Folder{}).Where("id = ?", folderId).First(&mainFolder)
-	db.Where("folder_id = ?", mainFolder.ID).Find(&children)
-	for _, child := range children {
-		traverse(child, &db)
-	}
+	// Recursive tree DFS to traverse, and delete folders
+	db.Transaction(func(tx *gorm.DB) error {
+		if err := tx.Model(models.Folder{}).Where("id = ?", folderId).First(&mainFolder).Error; err != nil {
+			return err
+		}
 
-	db.Where("folder_id", mainFolder.ID).Delete(&models.Password{})
+		if err := tx.Where("folder_id = ?", mainFolder.ID).Find(&children).Error; err != nil {
+			return err
+		}
 
-	for i := len(foldersToDelete) - 1; i >= 0; i-- {
-		db.Where("id = ?", foldersToDelete[i].ID).Delete(&models.Folder{})
-	}
+		for _, child := range children {
+			traverse(child, tx)
+		}
 
-	db.Delete(&mainFolder)
+		if err := tx.Where("folder_id", mainFolder.ID).Delete(&models.Password{}).Error; err != nil {
+			return err
+		}
 
-	// IMplement recursive delete
+		for i := len(foldersToDelete) - 1; i >= 0; i-- {
+			if err := tx.Where("id = ?", foldersToDelete[i].ID).Delete(&models.Folder{}).Error; err != nil {
+				return err
+			}
+		}
+
+		if err := tx.Delete(&mainFolder).Error; err != nil {
+			return err
+		}
+
+		return nil
+	})
 
 	responseMap["id"] = fmt.Sprint(folderId)
 	response, err := json.Marshal(responseMap)
@@ -66,19 +81,21 @@ func (DeleteProcedure) Execute(proc *handlers.ProcedureData) {
 	proc.Writer.Write(response)
 }
 
-func traverse(folder models.Folder, db *gorm.DB) {
+func traverse(folder models.Folder, tx *gorm.DB) error {
 	var children []models.Folder
 	foldersToDelete = append(foldersToDelete, folder)
 
-	db.Where("folder_id = ?", folder.ID).Delete(&models.Password{})
-	db.Where("folder_id = ?", folder.ID).Find(&children)
+	if err := tx.Where("folder_id = ?", folder.ID).Delete(&models.Password{}).Error; err != nil {
+		return err
+	}
+	if err := tx.Where("folder_id = ?", folder.ID).Find(&children).Error; err != nil {
+		return err
+	}
 	for _, child := range children {
-		traverse(child, db)
+		traverse(child, tx)
 	}
 
-	// get passwords for child
-	// get childs children
-	// traverse on those
+	return nil
 }
 
 func Delete(writer http.ResponseWriter, request *http.Request) {
