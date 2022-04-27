@@ -1,13 +1,16 @@
 package crypto_utils
 
 import (
+	"context"
 	"crypto/sha512"
 	b64 "encoding/base64"
 	"math/rand"
 	"time"
+	"vaultea/api/internal/database"
 	"vaultea/api/internal/environment"
 	"vaultea/api/internal/models"
 
+	"github.com/auth0/go-jwt-middleware/v2/validator"
 	"github.com/golang-jwt/jwt/v4"
 	"golang.org/x/crypto/pbkdf2"
 )
@@ -48,14 +51,25 @@ func ComparePassword(dbPassword string, clientPassword string) bool {
 }
 
 func GetJWT(user models.User) (string, error) {
+	var vault models.Vault
+	db := database.GetDb()
+	db.Where("user_id = ?", user.ID).Find(&vault)
+
+	if (vault == models.Vault{}) {
+		panic("No vault found for user")
+	}
+
 	expirationDate := time.Now().Add(5 * time.Minute)
-	secret := environment.GetEnv()["SECRET_STRING"]
+	secret := environment.GetEnv()["SECRET_KEY"] // TODO: Add getter
 	secretBytes := []byte(secret)
 
 	claims := &Claims{
 		Username: user.Username,
+		VaultID:  vault.ID,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(expirationDate),
+			Issuer:    "https://vaultea.io", // TODO: Make configurable
+			Audience:  []string{"https://vaultea.io"},
 		},
 	}
 
@@ -67,4 +81,27 @@ func GetJWT(user models.User) (string, error) {
 	} else {
 		return signedString, nil
 	}
+}
+
+func customClaims() validator.CustomClaims {
+	return &Claims{}
+}
+
+func InitJwtValidator() (*validator.Validator, error) {
+	keyFunc := func(ctx context.Context) (interface{}, error) {
+		// Our token must be signed using this data.
+		return []byte(environment.GetEnv()["SECRET_KEY"]), nil
+	}
+
+	// Set up the validator.
+	jwtValidator, err := validator.New(
+		keyFunc,
+		validator.HS512,
+		"https://vaultea.io",
+		[]string{"https://vaultea.io"}, // TODO: Make Configurable,
+		validator.WithCustomClaims(customClaims),
+		validator.WithAllowedClockSkew(30*time.Second),
+	)
+
+	return jwtValidator, err
 }

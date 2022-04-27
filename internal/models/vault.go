@@ -1,11 +1,7 @@
 package models
 
-import (
-	"gorm.io/gorm"
-)
-
 type Vault struct {
-	gorm.Model
+	BaseModel
 	UserID uint `gorm: "not null; uniqueIndex"`
 	User   User
 }
