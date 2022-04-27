@@ -53,4 +53,8 @@ func initRoutes(router *mux.Router, validator *validator.Validator) {
 	folderRouter.HandleFunc("", folder.Create).Methods(http.MethodPost)
 	folderRouter.HandleFunc("/{folderId:[0-9]+}", folder.Update).Methods(http.MethodPut)
 	folderRouter.HandleFunc("/{folderId:[0-9]+}", folder.Delete).Methods(http.MethodDelete)
+
+	// Password
+	passwordRouter := router.PathPrefix("/api/password").Subrouter()
+	passwordRouter.Use(jwtMiddleware.CheckJWT, middleware.PasswordDataMiddleware)
 }
