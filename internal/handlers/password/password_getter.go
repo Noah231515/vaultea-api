@@ -1,4 +1,4 @@
-package folder
+package password
 
 import (
 	"net/http"

@@ -9,6 +9,7 @@ import (
 	"vaultea/api/internal/environment"
 	"vaultea/api/internal/handlers/auth"
 	"vaultea/api/internal/handlers/folder"
+	"vaultea/api/internal/handlers/password"
 	"vaultea/api/internal/middleware"
 	crypto_utils "vaultea/api/internal/utils/crypto"
 
@@ -57,4 +58,6 @@ func initRoutes(router *mux.Router, validator *validator.Validator) {
 	// Password
 	passwordRouter := router.PathPrefix("/api/password").Subrouter()
 	passwordRouter.Use(jwtMiddleware.CheckJWT, middleware.PasswordDataMiddleware)
+
+	passwordRouter.HandleFunc("", password.Create).Methods(http.MethodPost)
 }

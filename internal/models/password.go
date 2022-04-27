@@ -10,6 +10,7 @@ type Password struct {
 	Vault       Vault `json:"-"`
 	FolderID    uint  `json:"folderId"`
 	Folder      Folder
+	Name        string    `gorm:"not null" json:"name"`
 	Username    string    `gorm:"not null" json:"username"`
 	Password    string    `gorm:"not null" json:"password"`
 	Description string    `json:"description"`
