@@ -60,4 +60,5 @@ func initRoutes(router *mux.Router, validator *validator.Validator) {
 	passwordRouter.Use(jwtMiddleware.CheckJWT, middleware.PasswordDataMiddleware)
 
 	passwordRouter.HandleFunc("", password.Create).Methods(http.MethodPost)
+	passwordRouter.HandleFunc("/{passwordId:[0-9]+}", password.Update).Methods(http.MethodPut)
 }
