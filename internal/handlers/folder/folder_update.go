@@ -46,6 +46,6 @@ func (UpdateProcedure) Execute(proc *handlers.ProcedureData) {
 
 func Update(writer http.ResponseWriter, request *http.Request) {
 	proc := UpdateProcedure{}
-	procData := handlers.ProcedureData{writer, request, make(map[string]interface{})}
+	procData := handlers.ProcedureData{writer, request}
 	handlers.ExecuteHandler(proc, &procData)
 }

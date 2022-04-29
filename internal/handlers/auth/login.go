@@ -17,12 +17,12 @@ type LoginProcedure struct {
 }
 
 func (LoginProcedure) ValidateData(proc *handlers.ProcedureData) bool {
-	proc.BodyMap = http_utils.GetRequestBodyMap(proc.Request)
-	return validators.LoginValidator(proc.BodyMap)
+	return validators.UserValidator(GetUser(proc.Request))
 }
 
 func (LoginProcedure) Execute(proc *handlers.ProcedureData) {
 	db := database.GetDb()
+	contextUser := GetUser(proc.Request)
 	invalidMessage := "Invalid username or password"
 
 	user := models.User{}
@@ -30,13 +30,13 @@ func (LoginProcedure) Execute(proc *handlers.ProcedureData) {
 	folders := []models.Folder{}
 	passwords := []models.Password{}
 
-	result := db.Where("username = ?", proc.BodyMap["username"]).First(&user)
+	result := db.Where("username = ?", contextUser.Username).First(&user)
 	vaultResult := db.Where("user_id = ?", user.ID).First(&vault)
 	foldersResult := db.Where("vault_id = ?", vault.ID).Find(&folders)
 	passwordsResult := db.Where("vault_id = ?", vault.ID).Find(&passwords)
 
 	if result.Error == nil && vaultResult.Error == nil && foldersResult.Error == nil && passwordsResult.Error == nil {
-		if crypto_utils.ComparePassword(user.Password, proc.BodyMap["password"].(string)) {
+		if crypto_utils.ComparePassword(user.Password, contextUser.Password) {
 			resp := make(map[string]interface{})
 			jwt, _ := crypto_utils.GetJWT(user)
 
@@ -66,6 +66,6 @@ func (LoginProcedure) Execute(proc *handlers.ProcedureData) {
 
 func Login(writer http.ResponseWriter, request *http.Request) {
 	proc := LoginProcedure{}
-	procData := handlers.ProcedureData{writer, request, make(map[string]interface{})}
+	procData := handlers.ProcedureData{writer, request}
 	handlers.ExecuteHandler(proc, &procData)
 }

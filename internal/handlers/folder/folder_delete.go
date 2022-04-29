@@ -100,6 +100,6 @@ func traverse(folder models.Folder, tx *gorm.DB) error {
 
 func Delete(writer http.ResponseWriter, request *http.Request) {
 	proc := DeleteProcedure{}
-	procData := handlers.ProcedureData{writer, request, make(map[string]interface{})}
+	procData := handlers.ProcedureData{writer, request}
 	handlers.ExecuteHandler(proc, &procData)
 }

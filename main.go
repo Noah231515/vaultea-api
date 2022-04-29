@@ -44,8 +44,11 @@ func initRoutes(router *mux.Router, validator *validator.Validator) {
 	jwtMiddleware := jwtmiddleware.New(validator.ValidateToken)
 
 	// Auth
-	router.HandleFunc("/api/signup", auth.SignUp).Methods("POST")
-	router.HandleFunc("/api/login", auth.Login).Methods("POST")
+	authRouter := router.PathPrefix("/api").Subrouter()
+	authRouter.Use(middleware.UserDataMiddleware)
+
+	authRouter.HandleFunc("/signup", auth.SignUp).Methods("POST")
+	authRouter.HandleFunc("/login", auth.Login).Methods("POST")
 
 	// Folder
 	folderRouter := router.PathPrefix("/api/folder").Subrouter()

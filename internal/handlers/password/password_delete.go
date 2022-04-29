@@ -52,6 +52,6 @@ func (DeleteProcedure) Execute(proc *handlers.ProcedureData) {
 
 func Delete(writer http.ResponseWriter, request *http.Request) {
 	proc := DeleteProcedure{}
-	procData := handlers.ProcedureData{writer, request, make(map[string]interface{})}
+	procData := handlers.ProcedureData{writer, request}
 	handlers.ExecuteHandler(proc, &procData)
 }

@@ -1,13 +1,16 @@
 package validators
 
-import string_utils "vaultea/api/internal/utils/string"
+import (
+	"vaultea/api/internal/models"
+	string_utils "vaultea/api/internal/utils/string"
+)
 
-func LoginValidator(bodyData map[string]interface{}) bool {
-	if string_utils.IsEmptyString(bodyData["username"].(string)) {
+func UserValidator(user models.User) bool {
+	if string_utils.IsEmptyString(user.Username) {
 		return false
 	}
 
-	if string_utils.IsEmptyString(bodyData["password"].(string)) {
+	if string_utils.IsEmptyString(user.Password) {
 		return false
 	}
 
