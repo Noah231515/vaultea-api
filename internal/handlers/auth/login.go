@@ -66,6 +66,6 @@ func (LoginProcedure) Execute(proc *handlers.ProcedureData) {
 
 func Login(writer http.ResponseWriter, request *http.Request) {
 	proc := LoginProcedure{}
-	procData := handlers.ProcedureData{writer, request, make(map[string]interface{})}
+	procData := handlers.ProcedureData{writer, request}
 	handlers.ExecuteHandler(proc, &procData)
 }

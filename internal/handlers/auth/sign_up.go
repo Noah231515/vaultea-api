@@ -41,6 +41,6 @@ func (SignUpProcedure) Execute(proc *handlers.ProcedureData) {
 
 func SignUp(writer http.ResponseWriter, request *http.Request) {
 	proc := SignUpProcedure{}
-	procData := handlers.ProcedureData{writer, request, make(map[string]interface{})}
+	procData := handlers.ProcedureData{writer, request}
 	handlers.ExecuteHandler(proc, &procData)
 }

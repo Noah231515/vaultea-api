@@ -33,6 +33,6 @@ func (CreateProcedure) Execute(proc *handlers.ProcedureData) {
 
 func Create(writer http.ResponseWriter, request *http.Request) {
 	proc := CreateProcedure{}
-	procData := handlers.ProcedureData{writer, request, make(map[string]interface{})}
+	procData := handlers.ProcedureData{writer, request}
 	handlers.ExecuteHandler(proc, &procData)
 }
