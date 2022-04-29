@@ -42,6 +42,10 @@ func GetBodyData(request *http.Request, dataType reflect.Type) (interface{}, err
 		var password models.Password
 		jsonErr = json.Unmarshal(b, &password)
 		return password, jsonErr
+	case "User":
+		var user models.User
+		jsonErr = json.Unmarshal(b, &user)
+		return user, jsonErr
 	default:
 		panic("Unknown data type")
 	}
