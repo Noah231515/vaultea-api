@@ -12,6 +12,6 @@ type Claims struct {
 	jwt.RegisteredClaims
 }
 
-func (claim *Claims) Validate(ctx context.Context) error {
+func (claim *Claims) Validate(ctx context.Context) error { // TODO: Implement claim validation
 	return nil
 }
