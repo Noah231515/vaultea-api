@@ -1,19 +1,20 @@
 package validators
 
 import (
+	"vaultea/api/internal/models"
 	string_utils "vaultea/api/internal/utils/string"
 )
 
-func SignUpValidator(bodyData map[string]interface{}) bool {
-	if string_utils.IsEmptyString(bodyData["key"].(string)) {
+func SignUpValidator(user models.User) bool {
+	if string_utils.IsEmptyString(user.Key) {
 		return false
 	}
 
-	if string_utils.IsEmptyString(bodyData["username"].(string)) {
+	if string_utils.IsEmptyString(user.Username) {
 		return false
 	}
 
-	if string_utils.IsEmptyString(bodyData["password"].(string)) {
+	if string_utils.IsEmptyString(user.Password) {
 		return false
 	}
 

@@ -47,7 +47,7 @@ func initRoutes(router *mux.Router, validator *validator.Validator) {
 	authRouter := router.PathPrefix("/api").Subrouter()
 	authRouter.Use(middleware.UserDataMiddleware)
 
-	router.HandleFunc("/api/signup", auth.SignUp).Methods("POST").Subrouter().Use(middleware.UserDataMiddleware)
+	authRouter.HandleFunc("/signup", auth.SignUp).Methods("POST")
 	authRouter.HandleFunc("/login", auth.Login).Methods("POST")
 
 	// Folder
