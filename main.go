@@ -61,4 +61,5 @@ func initRoutes(router *mux.Router, validator *validator.Validator) {
 
 	passwordRouter.HandleFunc("", password.Create).Methods(http.MethodPost)
 	passwordRouter.HandleFunc("/{passwordId:[0-9]+}", password.Update).Methods(http.MethodPut)
+	passwordRouter.HandleFunc("/{passwordId:[0-9]+}", password.Delete).Methods(http.MethodDelete)
 }
