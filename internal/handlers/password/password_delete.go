@@ -4,14 +4,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"strconv"
 
 	"vaultea/api/internal/database"
 	"vaultea/api/internal/handlers"
 	"vaultea/api/internal/models"
 	http_utils "vaultea/api/internal/utils/http"
-
-	"github.com/gorilla/mux"
 )
 
 type DeleteProcedure struct {
@@ -23,7 +20,7 @@ func (DeleteProcedure) ValidateData(proc *handlers.ProcedureData) bool {
 
 func (DeleteProcedure) Execute(proc *handlers.ProcedureData) {
 	db := database.GetDb()
-	passwordId, err := strconv.ParseUint(mux.Vars(proc.Request)["passwordId"], 10, 64)
+	passwordId, err := http_utils.GetQueryParamId(proc.Request, "passwordId")
 	responseMap := make(map[string]string)
 
 	if err != nil {

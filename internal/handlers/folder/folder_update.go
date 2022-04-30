@@ -3,13 +3,11 @@ package folder
 import (
 	"encoding/json"
 	"net/http"
-	"strconv"
 
 	"vaultea/api/internal/database"
 	"vaultea/api/internal/handlers"
+	http_utils "vaultea/api/internal/utils/http"
 	"vaultea/api/internal/validators"
-
-	"github.com/gorilla/mux"
 )
 
 type UpdateProcedure struct {
@@ -22,7 +20,7 @@ func (UpdateProcedure) ValidateData(proc *handlers.ProcedureData) bool {
 func (UpdateProcedure) Execute(proc *handlers.ProcedureData) {
 	db := database.GetDb()
 	folder := GetFolder(proc.Request)
-	folderId, err := strconv.ParseUint(mux.Vars(proc.Request)["folderId"], 10, 64)
+	folderId, err := http_utils.GetQueryParamId(proc.Request, "folderId")
 
 	if err != nil {
 		proc.Writer.WriteHeader(500)

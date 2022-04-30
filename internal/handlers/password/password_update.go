@@ -3,13 +3,11 @@ package password
 import (
 	"encoding/json"
 	"net/http"
-	"strconv"
 
 	"vaultea/api/internal/database"
 	"vaultea/api/internal/handlers"
+	http_utils "vaultea/api/internal/utils/http"
 	"vaultea/api/internal/validators"
-
-	"github.com/gorilla/mux"
 )
 
 type UpdateProcedure struct {
@@ -22,7 +20,7 @@ func (UpdateProcedure) ValidateData(proc *handlers.ProcedureData) bool {
 func (UpdateProcedure) Execute(proc *handlers.ProcedureData) {
 	db := database.GetDb()
 	password := GetPassword(proc.Request)
-	passwordId, err := strconv.ParseUint(mux.Vars(proc.Request)["passwordId"], 10, 64)
+	passwordId, err := http_utils.GetQueryParamId(proc.Request, "passwordId")
 
 	if err != nil {
 		proc.Writer.WriteHeader(500)

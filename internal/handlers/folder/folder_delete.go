@@ -4,14 +4,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"strconv"
 
 	"vaultea/api/internal/database"
 	"vaultea/api/internal/handlers"
 	"vaultea/api/internal/models"
 	http_utils "vaultea/api/internal/utils/http"
 
-	"github.com/gorilla/mux"
 	"gorm.io/gorm"
 )
 
@@ -26,7 +24,7 @@ func (DeleteProcedure) ValidateData(proc *handlers.ProcedureData) bool {
 
 func (DeleteProcedure) Execute(proc *handlers.ProcedureData) {
 	db := database.GetDb()
-	folderId, err := strconv.ParseUint(mux.Vars(proc.Request)["folderId"], 10, 64)
+	folderId, err := http_utils.GetQueryParamId(proc.Request, "folderId")
 	responseMap := make(map[string]string)
 	foldersToDelete = make([]models.Folder, 1)
 
