@@ -15,11 +15,7 @@ func FolderDataMiddleware(next http.Handler) http.Handler {
 			return
 		}
 
-		rawData, err := http_utils.GetBodyData(r, reflect.TypeOf(models.Folder{}))
-
-		if (err) != nil {
-			panic(err)
-		}
+		rawData, _ := http_utils.GetBodyData(r, reflect.TypeOf(models.Folder{}))
 
 		ctx := context.WithValue(r.Context(), "folder", rawData)
 		next.ServeHTTP(w, r.WithContext(ctx))
