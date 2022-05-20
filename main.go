@@ -56,6 +56,7 @@ func initRoutes(router *mux.Router, validator *validator.Validator) {
 
 	folderRouter.HandleFunc("", folder.Create).Methods(http.MethodPost)
 	folderRouter.HandleFunc("/{folderId:[0-9]+}", folder.Update).Methods(http.MethodPut)
+	folderRouter.HandleFunc("/{folderId:[0-9]+/updateStarred}", folder.UpdateStarred).Methods(http.MethodPut)
 	folderRouter.HandleFunc("/{folderId:[0-9]+}", folder.Delete).Methods(http.MethodDelete)
 
 	// Password
@@ -64,5 +65,6 @@ func initRoutes(router *mux.Router, validator *validator.Validator) {
 
 	passwordRouter.HandleFunc("", password.Create).Methods(http.MethodPost)
 	passwordRouter.HandleFunc("/{passwordId:[0-9]+}", password.Update).Methods(http.MethodPut)
+	passwordRouter.HandleFunc("/{passwordId:[0-9]+/updateStarred}", password.UpdateStarred).Methods(http.MethodPut)
 	passwordRouter.HandleFunc("/{passwordId:[0-9]+}", password.Delete).Methods(http.MethodDelete)
 }

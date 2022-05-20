@@ -15,11 +15,7 @@ func PasswordDataMiddleware(next http.Handler) http.Handler { // TODO: Work into
 			return
 		}
 
-		rawData, err := http_utils.GetBodyData(r, reflect.TypeOf(models.Password{}))
-
-		if (err) != nil {
-			panic(err)
-		}
+		rawData, _ := http_utils.GetBodyData(r, reflect.TypeOf(models.Password{}))
 
 		ctx := context.WithValue(r.Context(), "password", rawData)
 		next.ServeHTTP(w, r.WithContext(ctx))
