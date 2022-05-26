@@ -29,7 +29,7 @@ func (UpdateStarredProcedure) Execute(proc *handlers.ProcedureData) {
 
 	db.Where("id = ?", id).Find(&folder)
 	folder.Starred = !folder.Starred
-	db.Updates(&folder)
+	db.Model(&folder).Select("starred").Updates(&folder)
 
 	json, _ := json.Marshal(folder)
 
