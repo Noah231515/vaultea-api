@@ -29,7 +29,7 @@ func (UpdateStarredProcedure) Execute(proc *handlers.ProcedureData) {
 
 	db.Where("id = ?", id).Find(&password)
 	password.Starred = !password.Starred
-	db.Updates(&password)
+	db.Model(&password).Select("starred").Updates(&password)
 
 	json, _ := json.Marshal(password)
 
