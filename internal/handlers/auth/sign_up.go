@@ -31,7 +31,11 @@ func (SignUpProcedure) Execute(proc *handlers.ProcedureData) {
 
 		vault := models.Vault{
 			UserID: contextUser.ID}
+		userPreferences := models.UserPreferences{
+			UserID: contextUser.ID,
+		}
 		tx.Create(&vault)
+		tx.Create(&userPreferences)
 
 		return nil
 	})
