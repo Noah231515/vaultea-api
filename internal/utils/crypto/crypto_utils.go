@@ -53,10 +53,10 @@ func ComparePassword(dbPassword string, clientPassword string) bool {
 func GetJWT(user models.User) (string, error) {
 	var vault models.Vault
 	db := database.GetDb()
-	db.Where("user_id = ?", user.ID).Find(&vault)
+	vaultError := db.Where("user_id = ?", user.ID).Find(&vault)
 
-	if (vault == models.Vault{}) {
-		panic("No vault found for user")
+	if vaultError.Error != nil {
+		panic(vaultError.Error.Error())
 	}
 
 	expirationDate := time.Now().Add(5 * time.Minute)
@@ -64,6 +64,7 @@ func GetJWT(user models.User) (string, error) {
 	secretBytes := []byte(secret)
 
 	claims := &Claims{
+		UserID:   user.ID,
 		Username: user.Username,
 		VaultID:  vault.ID,
 		RegisteredClaims: jwt.RegisteredClaims{
