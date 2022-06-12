@@ -34,7 +34,10 @@ func (ToggleVaultViewProcedure) Execute(proc *handlers.ProcedureData) {
 		userPreferences.VaultView = 0
 	}
 
-	db.Model(userPreferences).Updates(userPreferences)
+	updateError := db.Model(userPreferences).Select("vault_view").Updates(&userPreferences)
+	if updateError.Error != nil {
+		http_utils.WriteErrorResponse(proc.Writer, updateError.Error)
+	}
 
 	response, err := json.Marshal(&userPreferences)
 	if err != nil {
