@@ -64,6 +64,12 @@ func WriteErrorResponse(writer http.ResponseWriter, err error) {
 	writer.Write(jsonResponse)
 }
 
+func GetUserID(writer http.ResponseWriter, request *http.Request) uint {
+	context := request.Context()
+	claims := context.Value(jwtmiddleware.ContextKey{}).(*validator.ValidatedClaims).CustomClaims.(*crypto_utils.Claims)
+	return claims.UserID
+}
+
 func GetVaultId(writer http.ResponseWriter, request *http.Request) uint {
 	context := request.Context()
 	claims := context.Value(jwtmiddleware.ContextKey{}).(*validator.ValidatedClaims).CustomClaims.(*crypto_utils.Claims)

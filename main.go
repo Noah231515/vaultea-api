@@ -10,6 +10,7 @@ import (
 	"vaultea/api/internal/handlers/auth"
 	"vaultea/api/internal/handlers/folder"
 	"vaultea/api/internal/handlers/password"
+	"vaultea/api/internal/handlers/user_preferences"
 	"vaultea/api/internal/middleware"
 	crypto_utils "vaultea/api/internal/utils/crypto"
 
@@ -67,4 +68,9 @@ func initRoutes(router *mux.Router, validator *validator.Validator) {
 	passwordRouter.HandleFunc("/{passwordId:[0-9]+}", password.Update).Methods(http.MethodPut)
 	passwordRouter.HandleFunc("/{passwordId:[0-9]+/updateStarred}", password.UpdateStarred).Methods(http.MethodPut)
 	passwordRouter.HandleFunc("/{passwordId:[0-9]+}", password.Delete).Methods(http.MethodDelete)
+
+	// User Preferences
+	userPreferencesRouter := router.PathPrefix("/api/userPreferences").Subrouter()
+	userPreferencesRouter.Use(jwtMiddleware.CheckJWT)
+	userPreferencesRouter.HandleFunc("/toggleVaultView", user_preferences.ToggleVaultView).Methods(http.MethodPut)
 }
